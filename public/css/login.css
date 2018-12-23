@@ -1,0 +1,43 @@
+body {
+	/*Background gradient from: http://www.colorzilla.com/gradient-editor/;*/
+	background: #f0f9ff; /* Old browsers */
+	background: -moz-linear-gradient(top, #f0f9ff 0%, #cbebff 47%, #a1dbff 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, #f0f9ff 0%,#cbebff 47%,#a1dbff 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, #f0f9ff 0%,#cbebff 47%,#a1dbff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#a1dbff',GradientType=0 ); /* IE6-9 */
+}
+
+.logincard {
+	width: 25%;
+	position: absolute;
+	left: 50%;
+	top: 30%;
+	transform: translate(-50%, -30%);
+	text-align: center;
+}
+
+.cardShadow {
+	-webkit-box-shadow: 6px 4px 7px -2px rgba(0,0,0,0.56);
+	-moz-box-shadow: 6px 4px 7px -2px rgba(0,0,0,0.56);
+	box-shadow: 6px 4px 7px -2px rgba(0,0,0,0.56);
+}
+
+.loginInput {
+	width: 90%;
+	right: 50%;
+	padding: 12px 20px;
+	margin: 8px 0;
+	display: inline-block;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+}
+
+.loginButton {
+	background-color: #4CAF50;
+	color: white;
+	padding: 14px 20px;
+	margin: 8px 0;
+	border: none;
+	cursor: pointer;
+	width: 90%;
+}
