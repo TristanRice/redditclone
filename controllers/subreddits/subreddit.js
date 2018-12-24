@@ -1,7 +1,7 @@
 const express   = require("express")
 	, db 	    = require("../../util/db")
 	, Subreddit = require("../../models/subreddit")
-	, helpers   = require("../helpers/helper")
+	, authent   = require("../middlewares/authentication/auth")
 	, Post      = require("../../models/post")
 	, Comment   = require("../../models/comment")
 	, subroutes = require("./r")
@@ -11,14 +11,14 @@ const express   = require("express")
 
 mongoose.connect(config.MongoURI);
 
-router.get("/create", helpers.is_authenticated, (req, res) => {
+router.get("/create", authent.is_authenticated, (req, res) => {
 	res.render("subreddits/create", {
 		title: "aaa",
 		current_user: req.session.current_user
 	});
 });
 
-router.post("/create", helpers.is_authenticated, (req, res) => {
+router.post("/create", authent.is_authenticated, (req, res) => {
 	current_user = req.session.current_user[0];
 
 	let subreddit = new Subreddit({

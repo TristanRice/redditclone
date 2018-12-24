@@ -1,6 +1,6 @@
 const express   = require("express")
 	, Subreddit	= require("../../models/subreddit")
-	, helpers   = require("../helpers/helpers")
+	, auth      = require("../middlewares/authentication/auth")
 	, router    = express.Router( );
 
 router.get("/:subreddit", (req, res) => {
@@ -31,7 +31,7 @@ router.get("/:subreddit", (req, res) => {
 	});
 });
 
-router.post("/:subreddit/make_post", (req, res) => {
+router.post("/:subreddit/make_post", auth.is_authenticated, (req, res) => {
 
 })
 

@@ -1,7 +1,8 @@
 const express = require("express")
 	, router  = express.Router( )
 	, subs    = require("./subreddits/subreddit")
-	, auth    = require("./auth/auth");
+	, auth    = require("./auth/auth")
+	, logging = require("./middlewares/logging/logging");
 
 router.get("/", (req, res) => {
 	res.render("index", {
@@ -11,5 +12,6 @@ router.get("/", (req, res) => {
 
 router.use("/", subs);
 router.use("/", auth);
+router.use(logging.main);
 
 module.exports = router;
