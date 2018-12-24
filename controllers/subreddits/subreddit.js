@@ -1,13 +1,13 @@
-const express   = require("express")
-	, db 	    = require("../../util/db")
-	, Subreddit = require("../../models/subreddit")
-	, authent   = require("../middlewares/authentication/auth")
-	, Post      = require("../../models/post")
-	, Comment   = require("../../models/comment")
-	, subroutes = require("./r")
-	, config    = require("../../config")
-	, mongoose  = require("mongoose")
-	, router    = express.Router( );
+const express   =   require("express")
+	, db 	    =   require("../../util/db")
+	, Subreddit =   require("../../models/subreddit")
+	, authent   =   require("../middlewares/authentication/auth")
+	, Post      =   require("../../models/post")
+	, Comment   =   require("../../models/comment")
+	, subroutes =   require("./r")
+	, config    =   require("../../config")
+	, mongoose  =   require("mongoose")
+	, router    =   express.Router( );
 
 mongoose.connect(config.MongoURI);
 
@@ -26,15 +26,13 @@ router.post("/create", authent.is_authenticated, (req, res) => {
 		administrator: current_user,
 		description: req.body.description,
 	});
-	subreddit.setUp(current_user);
 
 	subreddit.save((err) => {
 		if (err)
-			throw err;
-
-		console.log("Subreddit added");
-	})
-
+			throw err
+		console.log("Subreddit created");
+	});
+	
 	return res.render("subreddits/create");
 });
 

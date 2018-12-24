@@ -3,4 +3,4 @@ node_modules
 public/css/bootstrap
 public/js/bootstrap
 public/js/jquery
-
+public/img/uploads/*

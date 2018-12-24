@@ -1,12 +1,16 @@
-const express  = require("express")
-	, routes   = require("./controllers/index")
-	, config   = require("./config")
-	, parser   = require("body-parser")
-	, mongoose = require("mongoose")
-	, cookie   = require("cookie-parser")
-	, session  = require("express-session");
+const express    = require("express")
+	, routes     = require("./controllers/index")
+	, config     = require("./config")
+	, parser     = require("body-parser")
+	, mongoose   = require("mongoose")
+	, cookie     = require("cookie-parser")
+	, session    = require("express-session")
+	, fileUpload = require("express-fileupload")
+	, app 	     = express( );
 
-const app = express( );
+app.use(fileUpload({
+	limits: { filesize: 50 * 1024 * 1024 }
+}));
 
 app.use(parser.urlencoded({
 	extended: true

@@ -108,34 +108,31 @@ subredditSchema.methods.makePost = function(post) {
 
 subredditSchema.methods.setUp = function(current_user) {
 	current_date = Date( );
+	console.log("here");
 	if (this.is_new) { //make sure that it is a new subreddit
 		//set up a new subreddit
 		this.metadata.created_at = current_date;
 		
 		//this justs puts a new post on the subreddit.
-		let comment = Comment({
+		let comment = new Comment({
 			text: "This is a comment",
 			user: current_user
 		});
 
-		let post = Post({
+		let post = new Post({
 			title: "Welcome to your new subreddit",
 			text: "Here you can create posts and images",
 			comments: [comment],
 			user: current_user
 		});
 		this.makePost(post);
-		console.log(this);
 		this.is_new = false;
 	}
 }
 
 subredditSchema.pre("save", function(next) {
-	current_date = Date( );
-	console.log(this);
-	this.metadata.updated_at = current_date;
-	next( );
-})
+	next();
+});
 
 const Subreddit = mongoose.model("Subreddit", subredditSchema);
 

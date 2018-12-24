@@ -22,11 +22,21 @@ const postSchema = new mongoose.Schema({
 		//we don't want any of those whipper-snappers to use
 		//up too much of our space
 		is_local: {type: Boolean, default: false},
-		image_url: {type: String},
+		image_url: {type: String, default: ""},
 	},
 	comments: [Comment.schema],
 	User: [User.schema]
 });
+
+postSchema.pre("save", function(next) {
+	
+	let current_date = Date( );
+
+	if (!this.metadata.created_at)
+		this.metadata.created_at = current_date;
+	
+	this.metadata.updated_at = current_date;
+})
 
 const Post = mongoose.model("Post", postSchema);
 

@@ -1,6 +1,7 @@
 const mongoose   = require("mongoose")
 	, uniq_valid = require("mongoose-unique-validator")
-	, bcrypt     = require("bcrypt");
+	, bcrypt     = require("bcrypt")
+	, Post       = require("./post");
 
 const userSchema = new mongoose.Schema({
 	username: {type: String, required: true},
