@@ -1,0 +1,10 @@
+extends ../templates/template.pug
+
+
+block content
+	unless subreddit
+		p
+			| Something went very wrong
+	else
+		div
+			=subreddit.name

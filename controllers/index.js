@@ -1,6 +1,6 @@
 const express = require("express")
 	, router  = express.Router( )
-	, subs    = require("./subreddits/r")
+	, subs    = require("./subreddits/subreddit")
 	, auth    = require("./auth/auth");
 
 router.get("/", (req, res) => {
@@ -9,7 +9,7 @@ router.get("/", (req, res) => {
 	});
 });
 
-router.use("/r/", subs);
+router.use("/", subs);
 router.use("/", auth);
 
 module.exports = router;

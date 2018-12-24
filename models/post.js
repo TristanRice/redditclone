@@ -1,7 +1,9 @@
-const mongoose = require("mongoose")
-	, Comment  = require("./comment");
+const mongoose  = require("mongoose")
+	, Subreddit = require("./subreddit")
+	, Comment   = require("./comment")
+	, User      = require("./user");
 
-const postSchema = new mongoose.schema({
+const postSchema = new mongoose.Schema({
 	title: {type: String, required: true},
 	text: {type: String, required: true},
 	metadata: {
@@ -13,7 +15,7 @@ const postSchema = new mongoose.schema({
 		banned: {type: Boolean, default: false},
 		created_at: {type: Date},
 		updated_at: {type: Date}
-	}
+	},
 	image: {
 		is_image: {type: Boolean, default: false},
 		//remember to try and get hte user to host the image off-site,
@@ -22,5 +24,10 @@ const postSchema = new mongoose.schema({
 		is_local: {type: Boolean, default: false},
 		image_url: {type: String},
 	},
-	comments: [Comment.schema]
+	comments: [Comment.schema],
+	User: [User.schema]
 });
+
+const Post = mongoose.model("Post", postSchema);
+
+module.exports = Post;

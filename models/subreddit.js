@@ -1,17 +1,26 @@
 const mongoose = require("mongoose")
 	, User 	   = require("./user")
+	, Comment  = require("./comment")
 	, Post     = require("./post");
 
-const subredditSchema = new mongoose.schema({
+const subredditSchema = new mongoose.Schema({
 	name: {type: String, unique: true, required: true},
+	administrator: User.schema,
 	metadata: {
 		followers: {type: Number, required: false, default: 0},
-		administrator: {type: String, required: true},
 		moderators: [User.schema],
 		created_at: {type: Date},
 		updated_at: {type: Date},
-		banned: {type: Boolean, required: false, default: false},
-		deleted: {type: Boolean, required: false, default: false}
+		banned_status:{
+			banned: {type: Boolean, required: false, default: false},
+			reason: {type: String, required: false, default: ""},
+			//this could be useful to hold users accountable if they have
+			//unfairly banned a subreddit
+			user: [User.schema]
+		},
+		deleted_status: {
+			deleted: {type: Boolean, required: false, default: false}	
+		}
 	},
 	//a brief description that the moderators/admin of a subreddit can give to 
 	//new users, as a sort of first impression.
@@ -34,7 +43,7 @@ const subredditSchema = new mongoose.schema({
 			likes: {type: Number, required: false, default: 0},
 			dislikes: {type: Number, required: false, default: 0},
 			//why not have an icon lmao.
-			icon: {type: String, required: false},
+			icon: {type: String, required: false, default: ""},
 			//the severity of the punishment of a rule. In the future, this will
 			//be represented by an icon going from green to red. 
 			severity: {type: Number, required: false, defualt: 1}
@@ -43,31 +52,27 @@ const subredditSchema = new mongoose.schema({
 	//A subreddit having a certain amount of dislikes/likes is useful to show
 	//a prospective user trying to find a new subreddit. If a subreddit is 
 	//seen to be too contreversial, then the user can decide to not visit it. 
-	likes: {type: Number},
-	dislikes: {type: Number},
+	likes: {type: Number, default: 0},
+	dislikes: {type: Number, default: 0},
 	//This is an icon used to show 
-	icon: {type: String},
+	icon: {type: String, default: ""},
 	affiliated_subreddits: [
 		{
-			name: {type: String},
+			name: {type: String, default: ""},
 			//The follower count should be shown below the subreddit name
-			followers: {type: Number},
-			icon: {type: String}
+			followers: {type: Number, default: ""},
+			icon: {type: String, default: ""}
 		}
 	],
-	new: {type: Boolean, default: false},
+	is_new: {type: Boolean, default: true},
 	posts: [Post.schema],
 	//number at which comments will be hidden, this can be 
 	//unique to each subreddit
 	commentHideMin: {type: Number, default: -10}
 });
 
-subredditSchema.methods.addModerator = function(username) {
-	this.metadata.moderators.push({
-		user: {
-			"username": username
-		}
-	});
+subredditSchema.methods.addModerator = function(User) {
+	this.metadata.moderators.push(User);
 }
 
 subredditSchema.methods.addRule = function(rule_title, rule_description) {
@@ -81,13 +86,55 @@ subredditSchema.methods.calculateLikesAndDislikes = function(callback) {
 	return callback(this.likes-this.dislikes);
 }
 
-subredditSchema.pre("save", function(next) {
+subredditSchema.methods.hasModerator = function(User) {
+	return this.metadata.moderators.contains(User);
+}
+
+subredditSchema.methods.admin_is = function(User) {
+	return this.administrator === User;
+}
+
+subredditSchema.methods.delete = function(reason) {
+	//having a reason for a subreddit beign deleted could be useful 
+	//for the admins of that subreddit to tell their users where to 
+	//go next if they are still going to continue to give content
+	this.metadata.deleted_status.deleted = true;
+	this.metadata.deleted_status.reason  = reason;
+}
+
+subredditSchema.methods.makePost = function(post) {
+	this.posts.push(post);
+}
+
+subredditSchema.methods.setUp = function(current_user) {
 	current_date = Date( );
-	if (this.new) {
+	if (this.is_new) { //make sure that it is a new subreddit
 		//set up a new subreddit
 		this.metadata.created_at = current_date;
+		
+		//this justs puts a new post on the subreddit.
+		let comment = Comment({
+			text: "This is a comment",
+			user: current_user
+		});
+
+		let post = Post({
+			title: "Welcome to your new subreddit",
+			text: "Here you can create posts and images",
+			comments: [comment],
+			user: current_user
+		});
+		this.makePost(post);
+		console.log(this);
+		this.is_new = false;
 	}
+}
+
+subredditSchema.pre("save", function(next) {
+	current_date = Date( );
+	console.log(this);
 	this.metadata.updated_at = current_date;
+	next( );
 })
 
 const Subreddit = mongoose.model("Subreddit", subredditSchema);

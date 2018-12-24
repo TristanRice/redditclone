@@ -1,7 +1,8 @@
 const mongoose = require("mongoose")
 	, User 	   = require("./user");
 
-const commentSchema = mongoose.schema({
+
+const commentSchema = new mongoose.Schema({
 	content: {type: String},
 	user: User.schema,
 	metadata: {
@@ -11,11 +12,11 @@ const commentSchema = mongoose.schema({
 		deleted: {type: Boolean, default: false},
 		upvotes: {type: Number, default: 0},
 		downvotes: {type: Number, default: 0}
-	}
+	},
 	platinums: {type: Number, default: 0},
 	golds: {type: Number, default: 0},
 	silvers: {type: Number, default: 0},
-	uid: {type: String}
+	uid: {type: String},
 	//The way that this works is that it will default to no uid_for,
 	//this means that a new comment will have no uid_for, but then 
 	//replies to that will have the uid_for to the comment that they
@@ -34,6 +35,8 @@ commentSchema.methods.gildComment = function(level) {
 }
 
 commentSchema.methods.vote = function(value) {
+	if (value!==1 || value!==-1)
+		return;
 	this.upvotes+=value;
 }
 
@@ -41,7 +44,6 @@ commentSchema.methods.shouldBeHidden = function(commentHideMin) {
 	return (this.upvotes-this.downvotes) < commentHideMin;
 }
 
+const Comment = mongoose.model("Comment", commentSchema)
 
-
-commentSchema.pre("save", function(next) {
-});
+module.exports = Comment;

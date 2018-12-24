@@ -3,7 +3,8 @@ const express  = require("express")
 	, User     = require("../../models/user.js")
 	, mongoose = require("mongoose")
 	, config   = require("../../config")
-	, session  = require("express-session");
+	, session  = require("express-session")
+	, bcrypt   = require("bcrypt");
 
 mongoose.connect(config.MongoURI);
 const { check, validationResult } = require('express-validator/check');
@@ -92,14 +93,22 @@ router.get("/login", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-	User.find({username: req.body.username}, (err, user) => {
+	User.find({username: req.body.username}, (err, User) => {
+
 		if (err)
 			throw err;
-		
-		if (user.password_verify(req.body.password)){
+
+		//If there is no user found then we should just say that
+		//They have entered the wrong username or password
+		if (!User.length) 
+			return res.render("login", {
+				error: "Wrong username and/or password"
+			});
+
+		if (bcrypt.compareSync(req.body.password2, User[0].password)) {
 			//If the user has entered correct credentials, give
 			//them a session and redirect them back to the main page
-			req.session.current_user = user;
+			req.session.current_user = User;
 			req.session.save( );
 
 			return res.redirect("/");

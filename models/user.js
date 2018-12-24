@@ -3,9 +3,9 @@ const mongoose   = require("mongoose")
 	, bcrypt     = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
-	username: {type: String, required: true, unique: true},
-	email: {type: String, required: true, unique: true},
-	password: {type: String, required: true, unique: true},
+	username: {type: String, required: true},
+	email: {type: String, required: true},
+	password: {type: String, required: true},
 	name: {
 		first: {type: String, required: false},
 		last: {type: String, required: false}
@@ -34,7 +34,7 @@ userSchema.pre("save", function(next) {
 	next( );
 });
 
-userSchema.plugin(uniq_valid);
+//userSchema.plugin(uniq_valid);
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
