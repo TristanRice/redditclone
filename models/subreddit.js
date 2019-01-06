@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 	, User 	   = require("./user")
-	, Comment  = require("./comment")
+	, Comment  = require("./comments")
 	, Post     = require("./post");
 
 const subredditSchema = new mongoose.Schema({
@@ -65,7 +65,12 @@ const subredditSchema = new mongoose.Schema({
 		}
 	],
 	is_new: {type: Boolean, default: true},
-	posts: [Post.schema],
+	posts: [
+		{
+			post: Post.schema,
+			user: User.schema
+		}
+	],
 	//number at which comments will be hidden, this can be 
 	//unique to each subreddit
 	commentHideMin: {type: Number, default: -10}
@@ -102,8 +107,11 @@ subredditSchema.methods.delete = function(reason) {
 	this.metadata.deleted_status.reason  = reason;
 }
 
-subredditSchema.methods.makePost = function(post) {
-	this.posts.push(post);
+subredditSchema.methods.makePost = function(post, user) {
+	this.posts.push({
+		post,
+		user
+	});
 }
 
 subredditSchema.methods.setUp = function(current_user) {
@@ -116,22 +124,22 @@ subredditSchema.methods.setUp = function(current_user) {
 		//this justs puts a new post on the subreddit.
 		let comment = new Comment({
 			text: "This is a comment",
-			user: current_user
 		});
 
 		let post = new Post({
 			title: "Welcome to your new subreddit",
 			text: "Here you can create posts and images",
 			comments: [comment],
-			user: current_user
 		});
-		this.makePost(post);
+		this.makePost(post, this.administrator);
 		this.is_new = false;
 	}
 }
 
 subredditSchema.pre("save", function(next) {
-	next();
+	//the administrator will always be the current user
+	this.setUp(this.administrator);	
+	next( );
 });
 
 const Subreddit = mongoose.model("Subreddit", subredditSchema);

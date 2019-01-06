@@ -4,7 +4,8 @@ const express  = require("express")
 	, mongoose = require("mongoose")
 	, config   = require("../../config")
 	, session  = require("express-session")
-	, bcrypt   = require("bcrypt");
+	, bcrypt   = require("bcrypt")
+	, errores  = require("../helpers/errors");
 
 mongoose.connect(config.MongoURI);
 const { check, validationResult } = require('express-validator/check');
@@ -28,18 +29,14 @@ router.post("/register", [
 		.trim( ).escape( ),
 	
 	body("firstname")
-		.custom((value, {req}) => {
-			if (value && !(value.length>2 && value.length<20))
-				throw new Error("Your First name must be between 5 and 20 characters")
-			return true;
-		}).trim( ).escape( ),
+		.isLength({min: 2, max: 20})
+		.withMessage(errores.error_messages.firstnameLength)
+		.trim( ).escape( ),
 	
 	body("surname")
-		.custom((value, {req}) => {
-			if (value && !(value.length>2 && value.length<20))
-				throw new Error("Your surname must be between 5 and 20 characters")
-			return true;
-		}).trim( ).escape( ),
+		.isLength({min: 2, max:20})
+		.withMessage(errores.error_messages.surnameLength)
+		.trim( ).escape( ),
 	
 	body("password1")
 		.isLength({min: 10, max:99})
@@ -53,7 +50,7 @@ router.post("/register", [
 (req, res) => {
 	let errors = validationResult(req);
 	
-	console.log(errors.array( ))
+	console.log(errors.array( ));
 	if (!errors.isEmpty( )) {
 		return res.render("register", {
 			"errors": errors.array( )

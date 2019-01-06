@@ -35,7 +35,6 @@ userSchema.pre("save", function(next) {
 	next( );
 });
 
-//userSchema.plugin(uniq_valid);
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

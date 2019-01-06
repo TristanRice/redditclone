@@ -4,8 +4,9 @@
   "description": "A clone of reddit",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "./node_modules/.bin/nodemon index.js"
+    "test": "nodejs test.js",
+    "dev": "./node_modules/.bin/nodemon index.js",
+    "prod": "nodejs index.js"
   },
   "author": "Tristan",
   "license": "ISC",

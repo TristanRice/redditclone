@@ -1,7 +1,9 @@
 const mongoose  = require("mongoose")
 	, Subreddit = require("./subreddit")
-	, Comment   = require("./comment")
-	, User      = require("./user");
+	, User = require("./user")
+	, Comment   = require("./comments");
+
+console.log(User);
 
 const postSchema = new mongoose.Schema({
 	title: {type: String, required: true},
@@ -24,8 +26,7 @@ const postSchema = new mongoose.Schema({
 		is_local: {type: Boolean, default: false},
 		image_url: {type: String, default: ""},
 	},
-	comments: [Comment.schema],
-	User: [User.schema]
+	comments: [Comment.schema]
 });
 
 postSchema.pre("save", function(next) {

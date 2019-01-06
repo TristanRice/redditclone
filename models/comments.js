@@ -1,10 +1,9 @@
 const mongoose = require("mongoose")
-	, User 	   = require("./user");
-
+	, User 	   = require("./user")
+	, Post     = require("./post");
 
 const commentSchema = new mongoose.Schema({
 	content: {type: String},
-	user: User.schema,
 	metadata: {
 		created_at: {type: Date},
 		updated_at: {type: Date},
@@ -23,7 +22,6 @@ const commentSchema = new mongoose.Schema({
 	//are replying to.
 	uid_for: {type: String, default: ""}
 });
-
 commentSchema.methods.gildComment = function(level) {
 	switch(level) {
 		case 1: ++this.silvers; break;
@@ -44,6 +42,6 @@ commentSchema.methods.shouldBeHidden = function(commentHideMin) {
 	return (this.upvotes-this.downvotes) < commentHideMin;
 }
 
-const Comment = mongoose.model("Comment", commentSchema)
+const Comment = mongoose.model("Comments", commentSchema)
 
 module.exports = Comment;
