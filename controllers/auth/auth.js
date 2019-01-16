@@ -1,11 +1,12 @@
-const express  = require("express")
-	, router   = express.Router( )
-	, User     = require("../../models/user.js")
-	, mongoose = require("mongoose")
-	, config   = require("../../config")
-	, session  = require("express-session")
-	, bcrypt   = require("bcrypt")
-	, errores  = require("../helpers/errors");
+const express   = require("express")
+	, router    = express.Router( )
+	, User      = require("../../models/user.js")
+	, mongoose  = require("mongoose")
+	, config    = require("../../config")
+	, session   = require("express-session")
+	, bcrypt    = require("bcrypt")
+	, errores   = require("../helpers/errors")
+	, constants = require("../helpers/constants");
 
 mongoose.connect(config.MongoURI);
 const { check, validationResult } = require('express-validator/check');
@@ -19,8 +20,8 @@ router.get("/register", (req, res) => {
 router.post("/register", [
 	
 	check("username")
-		.isLength({min: 5, max: 15})
-		.withMessage("Your username must be between 5 and 15 characters")
+		.isLength({min: constants.USERNAME_MIN_LENGTH, max: constants.USERNAME_MAX_LENGTH})
+		.withMessage(errores.error_messages.MESSAGE_USERNAME_WRONG_LENGTH)
 		.escape( ).trim( ),
 
 	check("email")
@@ -30,7 +31,7 @@ router.post("/register", [
 	
 	body("firstname")
 		.isLength({min: 2, max: 20})
-		.withMessage(errores.error_messages.firstnameLength)
+		.withMessage(errores.error_messages.MESSAGE_USER_FIRSTNAME_WRONG_LENGTH)
 		.trim( ).escape( ),
 	
 	body("surname")
@@ -45,6 +46,11 @@ router.post("/register", [
 			if (value!==req.body.password2)
 				throw new Error("Passwords must match");
 			return true;
+		})
+		.custom((value, {req}) => {
+			//Check that it mathces the regex here
+			if (false)
+				throw new Error("You")
 		})
 ],
 (req, res) => {

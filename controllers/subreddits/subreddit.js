@@ -9,6 +9,7 @@ const express   =   require("express")
 	, mongoose  =   require("mongoose")
 	, errors    =   require("../helpers/errors")
 	, router    =   express.Router( )
+	, constants =   require("../helpers/constants")
 	, {
 		check,
 		validationResult,
@@ -27,7 +28,7 @@ router.get("/create", authent.is_authenticated, (req, res) => {
 router.post("/create", authent.is_authenticated, [
 
 	check("name")
-		.isLength({min: 3, max: 20})
+		.isLength({min: constants.SUBREDIT_NAME_MIN_LENGTH, max: constants.SUBREDIT_NAME_MAX_LENGTH})
 		.withMessage(errors.error_messages.subNameLength)
 		.escape( ).trim( )
 		.custom((value, {req}) => {
@@ -35,7 +36,7 @@ router.post("/create", authent.is_authenticated, [
 		}),
 
 	check("description")
-		.isLength({min:10, max:200})
+		.isLength({min: constants.SUBREDIT_NAME_MIN_LENGTH, max: constants.SUBREDIT_NAME_MAX_LENGTH})
 		.withMessage(errors.error_messages.subDescLength)
 		.escape( ).trim( )
 

@@ -8,12 +8,20 @@ const express     =   require("express")
 	, mongoose    =   require("mongoose")
 	, fileUpload  =   require("express-fileupload")
 	, config 	  =   require("../../config")
+	, constants   =	  require("../helpers/constants")
+	, {
+		check,
+		validationResult,
+		body
+	}		      = require("express-validator/check")
 	, router      =   express.Router( );
+
 
 mongoose.connect(config.MongoURI);
 
 router.get("/:subreddit", (req, res) => {
 
+	//first get the subreddit name from the request parameter
 	subreddit = req.params.subreddit;
 
 	Subreddit.find({name: subreddit}, (err, Sub) => {
@@ -21,9 +29,11 @@ router.get("/:subreddit", (req, res) => {
 		if (err)
 			throw err;
 		
+		//if no subreddit with this name exists, give them a 404 error		
 		if (!Sub.length)
 			return errors.error_404(req, res, "Subreddit");
 
+		//now we render the actual subeddit page.
 		Sub = Sub[0]
 		return res.render("subreddits/sub.pug", {
 			title: Sub.name,
@@ -32,7 +42,24 @@ router.get("/:subreddit", (req, res) => {
 	});
 });
 
-router.post("/:subreddit/make_post", auth.is_authenticated, (req, res) => {
+router.post("/:subreddit/make_post", auth.is_authenticated, [
+
+	/*
+	* The only necessary checks for these right now are length chceks, some more checks may be
+	* needed later on, such as censorship checks. 
+	*/
+	check("title")
+		.isLength({min: constants.POST_TITLE_MIN_LENGTH, max: constants.POST_TITLE_MAX_LENGTH})
+		.withMessage(errors.error_messages.MESSAGE_POST_WRONG_TITLE_LENGTH)
+		.escape( ).trim( ),
+
+	check("text")
+		.isLength({min: constants.POST_CONTENT_MIN_LENGTH, max:constants.POST_CONTENT_MAX_LENGTH})
+		.withMessage(errors.error_messages.MESSAGE_CONTENT_WRONG_TITLE_LENGTH)
+		.escape( ).trim( )
+
+],
+(req, res) => {
 
 	let subreddit    = req.params.subreddit;
 	let current_user = req.session.current_user;
@@ -45,11 +72,12 @@ router.post("/:subreddit/make_post", auth.is_authenticated, (req, res) => {
 		if (err)
 			throw err;
 
-		if (!Subreddit.length)
+		if (!subreddit.length)
 			return errors.error_404(req, res, "Subreddit");
 
 		subreddit = subreddit[0];
 
+		//make a new object from the schema, and push it to the subreddit object that we already have.
 		let post = new Post({
 			title: req.body.title,
 			text: req.body.text,
@@ -58,13 +86,17 @@ router.post("/:subreddit/make_post", auth.is_authenticated, (req, res) => {
 		})
 		subreddit.posts.push(post);
 		
-		Subreddit.update({_id: subreddit._id} /*lol*/, subreddit, function(err, raw) {
+		//This gets teh same ID from the subreddit objec that we are using, and updates it with the new post in the database
+		Subreddit.update({_id: subreddit._id}, subreddit, function(err, raw) {
+			
 			if (err)
 				console.log(`An error occured: ${err}`);
+
 			logger.logNewPost(subreddit, post, current_user, true);
 		});
 		
-		res.render("subreddits/make_post/main")
+		//even 
+		return res.render("subreddits/make_post/main")
 	});
 });
 
