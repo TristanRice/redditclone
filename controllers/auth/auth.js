@@ -1,26 +1,27 @@
 const express   = require("express")
-	, router    = express.Router( )
 	, User      = require("../../models/user.js")
 	, mongoose  = require("mongoose")
 	, config    = require("../../config")
 	, session   = require("express-session")
 	, bcrypt    = require("bcrypt")
 	, errores   = require("../helpers/errors")
-	, constants = require("../helpers/constants");
+	, url_for   = require("../helpers/url_for")
+	, constants = require("../helpers/constants")
+	, router    = express.Router( );
 
 mongoose.connect(config.MongoURI);
 const { check, validationResult } = require('express-validator/check');
 const { body } = require("express-validator/check");
 
 
-router.get("/register", (req, res) => {
+router.get(url_for.register, (req, res) => {
 	res.render("register");
 });
 
-router.post("/register", [
+router.post(url_for.register, [
 	
 	check("username")
-		.isLength({min: constants.USERNAME_MIN_LENGTH, max: constants.USERNAME_MAX_LENGTH})
+		.isLength({min: constants.USER_USERNAME_MIN_LENGTH, max: constants.USER_USERNAME_MAX_LENGTH})
 		.withMessage(errores.error_messages.MESSAGE_USERNAME_WRONG_LENGTH)
 		.escape( ).trim( ),
 
@@ -30,27 +31,26 @@ router.post("/register", [
 		.trim( ).escape( ),
 	
 	body("firstname")
-		.isLength({min: 2, max: 20})
+		.isLength({min: constants.USER_FIRSTNAME_MIN_LENGTH, max: constants.USER_FIRSTNAME_MAX_LENGTH})
 		.withMessage(errores.error_messages.MESSAGE_USER_FIRSTNAME_WRONG_LENGTH)
 		.trim( ).escape( ),
 	
 	body("surname")
-		.isLength({min: 2, max:20})
+		.isLength({min: constants.USER_SURNAME_MIN_LENGTH, max: constants.USER_SURNAME_MAX_LENGTH})
 		.withMessage(errores.error_messages.surnameLength)
 		.trim( ).escape( ),
 	
 	body("password1")
-		.isLength({min: 10, max:99})
-		.withMessage("Your password must be more than 10 characters")
+		.isLength({min: constants.USER_PASSWORD_MIN_LENGTH, max: constants.USER_PASSWORD_MAX_LENGTH})
+		.withMessage(errores.passwords.PASSWORD_WRONG_LENGTH)
 		.custom((value, {req}) => {
+
 			if (value!==req.body.password2)
-				throw new Error("Passwords must match");
+				throw new Error(constants.passwords.PASSWORD_NOT_MATCH);
+			
+			else if (false)
+				throw new Error(constants.passwords.MEET_PASSWORD_REQUIREMENTS)	
 			return true;
-		})
-		.custom((value, {req}) => {
-			//Check that it mathces the regex here
-			if (false)
-				throw new Error("You")
 		})
 ],
 (req, res) => {
@@ -91,11 +91,11 @@ router.post("/register", [
 	res.redirect("/");
 });
 
-router.get("/login", (req, res) => {
+router.get(url_for.login, (req, res) => {
 	res.render("login");
 });
 
-router.post("/login", (req, res) => {
+router.post(url_for.login, (req, res) => {
 	User.find({username: req.body.username}, (err, User) => {
 
 		if (err)
@@ -105,7 +105,7 @@ router.post("/login", (req, res) => {
 		//They have entered the wrong username or password
 		if (!User.length) 
 			return res.render("login", {
-				error: "Wrong username and/or password"
+				error: errores.error_messages.WRONG_CREDENTIALS
 			});
 
 		if (bcrypt.compareSync(req.body.password2, User[0].password)) {
@@ -118,12 +118,12 @@ router.post("/login", (req, res) => {
 		}
 
 		return res.render("login", {
-			error: "Wrong username and/or password"
+			error: errores.error_messages.WRONG_CREDENTIALS
 		});
 	});
 });
 
-router.get("/logout", (req, res) => {
+router.get(url_for.logout, (req, res) => {
 	req.session.destroy( );
 	res.redirect("/");
 });

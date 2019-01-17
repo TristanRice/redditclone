@@ -65,8 +65,10 @@ class Errors {
 																		Constants.USER_PASSWORD_MAX_LENGTH),
 
 				PASSWORD_NOT_MATCH: "Passwords must match",
-				PASSWORD_FINAL_MESSAGE: "Password must contain a symbol, a number, and a capital number"
-			}
+				MEET_PASSWORD_REQUIREMENTS: "Password must contain a symbol, a number, and a capital number"
+			},
+
+			WRONG_CREDENTIALS: "Wrong username and/or password"
 		}
 	}
 }

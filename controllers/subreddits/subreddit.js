@@ -56,6 +56,7 @@ router.post("/create", authent.is_authenticated, [
 		if (err)
 			throw err;
 
+		//return the user to an error page if the subreddit already exists.
 		if (subreddit)
 			return errors.already_exists(req, res, "subreddit");
 	});
@@ -64,9 +65,10 @@ router.post("/create", authent.is_authenticated, [
 		if (err)
 			throw err
 
-		return res.redirect(`/r/${req.body.name}`);
+		//after 
+		return res.redirect(`${constants.SUBREDDIT_PREFIX_STRING}${req.body.name}`);
 	});
 });
 
-router.use("/r/", subroutes);
+router.use(constants.SUBREDDIT_PREFIX_STRING, subroutes);
 module.exports = router;

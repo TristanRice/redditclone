@@ -27,6 +27,9 @@ class Constants {
 		this.SUBREDDIT_DESCRIPTION_MIN_LENGTH = this.AVG_MIN_LEN;
 		this.SUBREDDIT_DESCRIPTION_MAX_LENGTH = 120;
 
+		//vital strings for subreddits
+		this.SUBREDDIT_PREFIX_STRING = "/r/";
+		
 		/*
 		* User constants
 		*/

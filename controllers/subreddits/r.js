@@ -67,6 +67,11 @@ router.post("/:subreddit/make_post", auth.is_authenticated, [
 	let image        = req.files.imagefile;
 	let image_json   = fileUpload.uploadFile(image);
 
+	/*
+	* In order to actually make a post on the subreddit, we first
+	* must get the subreddit that the user is trying to make the 
+	* post on
+	*/
 	Subreddit.find({name: subreddit}, (err, subreddit) => {
 
 		if (err)
@@ -75,6 +80,7 @@ router.post("/:subreddit/make_post", auth.is_authenticated, [
 		if (!subreddit.length)
 			return errors.error_404(req, res, "Subreddit");
 
+		//mongoose returns this as a list, so after checking that it exists, we get the subreddit object from the first index of the list
 		subreddit = subreddit[0];
 
 		//make a new object from the schema, and push it to the subreddit object that we already have.
@@ -95,7 +101,6 @@ router.post("/:subreddit/make_post", auth.is_authenticated, [
 			logger.logNewPost(subreddit, post, current_user, true);
 		});
 		
-		//even 
 		return res.render("subreddits/make_post/main")
 	});
 });
