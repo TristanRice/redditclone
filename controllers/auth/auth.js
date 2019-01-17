@@ -27,7 +27,7 @@ router.post(url_for.register, [
 
 	check("email")
 		.isEmail( )
-		.withMessage("Please enter a valid email")
+		.withMessage(errores.error_messages.INVALID_EMAIL_MESSAGE)
 		.trim( ).escape( ),
 	
 	body("firstname")
@@ -49,7 +49,8 @@ router.post(url_for.register, [
 				throw new Error(constants.passwords.PASSWORD_NOT_MATCH);
 			
 			else if (false)
-				throw new Error(constants.passwords.MEET_PASSWORD_REQUIREMENTS)	
+				throw new Error(constants.passwords.MEET_PASSWORD_REQUIREMENTS)
+			
 			return true;
 		})
 ],

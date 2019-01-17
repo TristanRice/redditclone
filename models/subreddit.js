@@ -4,46 +4,68 @@ const mongoose = require("mongoose")
 	, Post     = require("./post");
 
 const subredditSchema = new mongoose.Schema({
+	
 	name: {type: String, unique: true, required: true},
+	
 	administrator: User.schema,
+	
 	metadata: {
 		followers: {type: Number, required: false, default: 0},
+	
 		moderators: [User.schema],
+	
 		created_at: {type: Date},
+	
 		updated_at: {type: Date},
+	
 		banned_status:{
+	
 			banned: {type: Boolean, required: false, default: false},
+	
 			reason: {type: String, required: false, default: ""},
+	
 			//this could be useful to hold users accountable if they have
 			//unfairly banned a subreddit
 			user: [User.schema]
 		},
+	
 		deleted_status: {
 			deleted: {type: Boolean, required: false, default: false}	
 		}
 	},
+	
 	//a brief description that the moderators/admin of a subreddit can give to 
 	//new users, as a sort of first impression.
 	description: {type: String},
+	
 	//If people see that they are online with multiple other people, then it
 	//promotes a sense of community, making them more likely to come back.
 	currently_online: {type: Number},
+	
 	//this can be useful for ranking subreddits based off more than subscribers alone
 	views: {type: Number},
+
 	//this is the banner that is shown on the top of the subreddit
 	banner: {type: String},
+	
 	rules: [
 		{
+	
 			rule_title: {type: String},
+	
 			rule_description: {type: String},
+	
 			//having upvotes and downvotes on a rule will allow the administrator
 			//and moderators to see how well the rule is going down within the users.
 			//This can help them improve the subreddit, by keeping rules that are 
 			//well liked, and takign away rules that get alot of dislikes
 			likes: {type: Number, required: false, default: 0},
+	
 			dislikes: {type: Number, required: false, default: 0},
+	
 			//why not have an icon lmao.
 			icon: {type: String, required: false, default: ""},
+	
 			//the severity of the punishment of a rule. In the future, this will
 			//be represented by an icon going from green to red. 
 			severity: {type: Number, required: false, defualt: 1}
@@ -53,24 +75,32 @@ const subredditSchema = new mongoose.Schema({
 	//a prospective user trying to find a new subreddit. If a subreddit is 
 	//seen to be too contreversial, then the user can decide to not visit it. 
 	likes: {type: Number, default: 0},
+	
 	dislikes: {type: Number, default: 0},
+	
 	//This is an icon used to show 
 	icon: {type: String, default: ""},
+	
 	affiliated_subreddits: [
 		{
 			name: {type: String, default: ""},
 			//The follower count should be shown below the subreddit name
+	
 			followers: {type: Number, default: ""},
+	
 			icon: {type: String, default: ""}
 		}
 	],
+	
 	is_new: {type: Boolean, default: true},
+	
 	posts: [
 		{
 			post: Post.schema,
 			user: User.schema
 		}
 	],
+	
 	//number at which comments will be hidden, this can be 
 	//unique to each subreddit
 	commentHideMin: {type: Number, default: -10}

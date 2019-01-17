@@ -2,11 +2,13 @@ const Constants = require("./constants");
 
 class Errors {
 
+	//this is just a basic function so I don't have to type the same shit over and over again
 	make_length_error_messages(item, subitem, min, max) {
 		return `${item} ${subitem} must be between ${min} and ${max} characters long`;
 	}
 
 	constructor( ) {
+
 		this.error_404 = (req, res, item) => {
 			return res.render("errors/404", {
 				message: `Sorry, we could not find the ${item} that you are looking for`
@@ -25,11 +27,13 @@ class Errors {
 						  to access ${item}, please try again later`
 			});
 		}
+		
 		this.already_exists = (req, res, item) => {
 			return res.render("errors/already_exists", {
 				message: `Sorry, this ${item} already exists`
 			});
-		},
+		}
+		
 		this.error_messages =  {
 			MESSAGE_SUBREDDIT_NAME_WRONG_LENGTH: 
 				this.make_length_error_messages("Subreddit", "name", Constants.SUBREDDIT_NAME_MIN_LENGTH,
@@ -58,6 +62,8 @@ class Errors {
 			CONTENT_POST_LENGTH:
 				this.make_length_error_messages("Content", "length", Constants.POST_CONTENT_MIN_LENGTH,
 																	 Constants.POST_CONTENT_MAX_LENGTH),
+
+			INVALID_EMAIL_MESSAGE: "Please enter a valid email",
 
 			passwords: {
 				PASSWORD_WRONG_LENGTH:
